@@ -1,6 +1,6 @@
 import { AnimatePresence, MotionConfig, motion } from 'motion/react'
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { HashRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { HashRouter, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { Art } from './components/Art'
 import { Celebrations } from './components/Celebrations'
 import { HiddenNotes } from './components/HiddenNotes'
@@ -20,6 +20,8 @@ import Together from './pages/Together'
 import Calm from './pages/Calm'
 import Settings from './pages/Settings'
 const Universe = lazy(() => import('./pages/Universe'))
+// La vista previa publicada usa un router en memoria (el visor no deja pasar rutas en el #).
+const Router = import.meta.env.VITE_ROUTER === 'memory' ? MemoryRouter : HashRouter
 
 export default function App() {
   const [authed, setAuthed] = useState<boolean | null>(null)
@@ -35,9 +37,9 @@ export default function App() {
       ) : (
         <ToastHost>
           <StoreProvider picker={(choose, people) => <WhoPicker choose={choose} people={people} />}>
-            <HashRouter>
+            <Router>
               <Shell />
-            </HashRouter>
+            </Router>
           </StoreProvider>
         </ToastHost>
       )}
