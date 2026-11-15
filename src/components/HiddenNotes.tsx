@@ -11,7 +11,7 @@ export type Note = { to: Who; place: string; text: string; found?: string }
 export const PLACES = [
   { id: '/', label: 'Hoy' },
   { id: '/jardin', label: 'el jardín' },
-  { id: '/mascota', label: 'la casita de la mascota' },
+  { id: '/casita', label: 'la casita' },
   { id: '/cartas', label: 'las cartas' },
   { id: '/recuerdos', label: 'la caja de recuerdos' },
   { id: '/juntos', label: 'Juntos' },
@@ -22,7 +22,7 @@ export const PLACES = [
 export function HiddenNotes({ place }: { place: string }) {
   const { me, update } = useStore()
   const { name } = usePeople()
-  const notes = useItems<Note>('note').filter((n) => n.data.to === me && !n.data.found && n.data.place === place)
+  const notes = useItems<Note>('note').filter((n) => n.data.to === me && !n.data.found && (n.data.place === place || (n.data.place === '/mascota' && place === '/casita')))
   const [open, setOpen] = useState<Item<Note> | null>(null)
   return (
     <>

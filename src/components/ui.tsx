@@ -124,3 +124,35 @@ export function Segmented<T extends string>({ value, onChange, options }: { valu
     </div>
   )
 }
+
+/** Brillitos que vuelan desde un lugar hasta el contador de semillas. */
+export function flyToSeeds(from: DOMRect, n: number, calm: boolean, img = 'sparkles') {
+  if (calm || typeof document === 'undefined') return
+  const target = [...document.querySelectorAll<HTMLElement>('.seeds')].find((el) => el.getBoundingClientRect().width > 0)
+  if (!target) return
+  const t = target.getBoundingClientRect()
+  const sx = from.left + from.width / 2
+  const sy = from.top + from.height / 2
+  const count = Math.max(1, Math.min(n, 8))
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('img')
+    el.src = `${import.meta.env.BASE_URL}fluent/${img}.png`
+    el.className = 'fly-bit'
+    el.style.left = `${sx - 13}px`
+    el.style.top = `${sy - 13}px`
+    document.body.appendChild(el)
+    const dx = t.left + t.width / 2 - sx
+    const dy = t.top + t.height / 2 - sy
+    const mx = (Math.random() - 0.5) * 140
+    const my = -60 - Math.random() * 70
+    el.animate(
+      [
+        { transform: 'translate(0,0) scale(.3)', opacity: 0 },
+        { transform: `translate(${mx}px,${my}px) scale(1)`, opacity: 1, offset: 0.35 },
+        { transform: `translate(${dx}px,${dy}px) scale(.35)`, opacity: 0.8 },
+      ],
+      { duration: 950, delay: i * 70, easing: 'cubic-bezier(.45,0,.25,1)', fill: 'both' },
+    ).onfinish = () => el.remove()
+  }
+  target.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.22)' }, { transform: 'scale(1)' }], { duration: 420, delay: 900 + count * 70, easing: 'ease-out' })
+}

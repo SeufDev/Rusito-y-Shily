@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Art } from '../components/Art'
 import { celebrate, Modal, useToast } from '../components/ui'
-import type { Item } from '../lib/backend'
 import type { Who } from '../lib/config'
 import { MOODS, NEEDS, QUESTIONS, speciesById } from '../lib/content'
 import { ago, dayKey, daysBetween, greeting, parseDay } from '../lib/dates'
@@ -19,6 +18,7 @@ export default function Home() {
   const { settings } = useStore()
   const { me, P } = usePeople()
   const n = daysTogether(settings.start) + 1
+  const { visible } = useSections()
   return (
     <motion.div className="stack-l" variants={stagger} initial="hidden" animate="show">
       <motion.section variants={rise} className="hero">
@@ -26,7 +26,7 @@ export default function Home() {
         <div>
           <p className="eyebrow">{new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
           <h1 className="display xl">{greeting()}, {P[me].name}</h1>
-          <Link to="/universo" className="muted link-soft">Hoy brilla la estrella número {n} de nuestro universo <ArrowRight size={14} /></Link>
+          {visible('universo') ? <Link to="/universo" className="muted link-soft">Hoy brilla la estrella número {n} de nuestro universo <ArrowRight size={14} /></Link> : <p className="muted">Hoy es nuestro día número {n}.</p>}
         </div>
       </motion.section>
 
@@ -272,32 +272,43 @@ function DailyQuestion() {
 }
 
 function GardenGlance() {
-  const { activePlots, growths, pet, hatched } = useGame()
-  const { me } = usePeople()
-  const thirsty = activePlots.filter((p) => !growths.get(p.id)!.today.has(me) && growths.get(p.id)!.stage < 3).length
+  const { activePlots, growths, pets, readyTotal, k } = useGame()
+  const { me, other, name } = usePeople()
+  const { visible } = useSections()
+  const thirsty = activePlots.filter((p) => !growths.get(p.id)!.today.has(me) && growths.get(p.id)!.stage < 4).length
+  const gift = k<{ for: Who; name: string }>('outfit').filter((o) => o.data.for === me && o.author === other).at(-1)
+  if (!visible('jardin') && !visible('casita')) return null
   return (
     <div className="card glance">
-      <Link to="/jardin" className="glance-row">
-        <Art lottie="1f331" size={46} />
-        <div className="grow">
-          <b>Jardín</b>
-          <div className="small muted">{activePlots.length === 0 ? 'Listo para la primera semillita' : thirsty ? `${thirsty} ${thirsty === 1 ? 'plantita se alegraría' : 'plantitas se alegrarían'} con agüita tuya` : 'Todo regado por vos hoy'}</div>
-        </div>
-        <ArrowRight size={16} />
-      </Link>
-      <Link to="/mascota" className="glance-row">
-        <Art lottie={pet ? (hatched ? petLottie(pet) : '1f423') : '1f43e'} size={46} />
-        <div className="grow">
-          <b>{pet ? pet.data.name : 'Mascota'}</b>
-          <div className="small muted">{pet ? (hatched ? 'Pasá a saludar cuando quieras' : 'El huevito espera calorcito') : 'Adopten a alguien juntos'}</div>
-        </div>
-        <ArrowRight size={16} />
-      </Link>
+      {visible('jardin') && (
+        <Link to="/jardin" className="glance-row">
+          <Art lottie="1f331" size={46} />
+          <div className="grow">
+            <b>Jardín</b>
+            <div className="small muted">
+              {activePlots.length === 0 ? 'Listo para la primera semillita' : readyTotal ? `Hay ${readyTotal} ${readyTotal === 1 ? 'gotita' : 'gotitas'} de néctar para juntar` : thirsty ? `${thirsty} ${thirsty === 1 ? 'plantita se alegraría' : 'plantitas se alegrarían'} con agüita tuya` : 'Todo regado por vos hoy'}
+            </div>
+          </div>
+          <ArrowRight size={16} />
+        </Link>
+      )}
+      {visible('casita') && (
+        <Link to="/casita" className="glance-row">
+          {pets.length ? <Art img={petById(pets[0].data.species).img} size={46} /> : <Art lottie="1f43e" size={46} />}
+          <div className="grow">
+            <b>La casita</b>
+            <div className="small muted">
+              {gift && Date.now() - Date.parse(gift.created_at) < 7 * 86400000 ? `${name(other)} te armó un outfit: “${gift.data.name}”` : pets.length ? `${pets.map((p) => p.data.name).join(', ')} ${pets.length === 1 ? 'te espera' : 'te esperan'}` : 'Adopten al primer animalito'}
+            </div>
+          </div>
+          <ArrowRight size={16} />
+        </Link>
+      )}
     </div>
   )
 }
 import { petById } from '../lib/content'
-const petLottie = (pet: Item<any>) => petById(pet.data.species).lottie
+import { useSections } from '../lib/sections'
 
 function Countdown() {
   const { settings } = useStore()

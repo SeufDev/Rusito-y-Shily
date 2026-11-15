@@ -18,3 +18,5 @@ export const DEFAULT_PEOPLE: Record<Who, { name: string; animal: string; color: 
   b: { name: 'Rusito', animal: '1f43b', color: '#8fb3a0' },
 }
 export const DEFAULT_START = '2026-11-14'
+/** Empezamos a las 14:00 (hora de Rusito, salvo que se cambie en Ajustes). */
+export const DEFAULT_START_TIME = '14:00'

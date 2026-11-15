@@ -1,13 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { backend, type Change, type Item } from './backend'
-import { DEFAULT_PEOPLE, DEFAULT_START, type Who } from './config'
+import { DEFAULT_PEOPLE, DEFAULT_START, DEFAULT_START_TIME, type Who } from './config'
 import { dayKey } from './dates'
 
 export type Person = { name: string; animal: string; color: string }
 export type Settings = {
   people: Record<Who, Person>
   start: string
+  /** 'HH:MM' del día que empezamos */
+  startTime?: string
+  /** huso horario de esa hora (si falta, se usa el de Rusito) */
+  startTz?: string
   nextMeet?: string
+  /** prender/apagar secciones: 'on' para los dos, 'off' apagada, 'a'/'b' solo la ve esa persona */
+  sections?: Partial<Record<string, 'on' | 'off' | Who>>
   reducedMotion?: boolean
 }
 
@@ -86,6 +92,7 @@ export function StoreProvider({ me, children }: { me: Who; children: ReactNode }
   const settings: Settings = useMemo(
     () => ({
       start: DEFAULT_START,
+      startTime: DEFAULT_START_TIME,
       ...settingsItem?.data,
       people: {
         a: { ...DEFAULT_PEOPLE.a, ...settingsItem?.data.people?.a },

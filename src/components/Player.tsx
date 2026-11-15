@@ -209,7 +209,7 @@ export function Player() {
             <span className="mini-bar" style={{ width: `${pct}%` }} />
           </motion.div>
         ) : (
-          <motion.div key="big" className="big" initial={{ opacity: 0, y: 16, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.98 }} transition={{ type: 'spring', damping: 28, stiffness: 300 }}>
+          <motion.div key="big" className="pl-big" initial={{ opacity: 0, y: 16, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.98 }} transition={{ type: 'spring', damping: 28, stiffness: 300 }}>
             {meta.cover && <div className="big-glow-wrap"><div className="big-glow" style={{ backgroundImage: `url(${meta.cover})` }} /></div>}
             <div className="big-top">
               <span className="eyebrow"><Headphones size={13} /> Lista de {P[s.list].name}</span>

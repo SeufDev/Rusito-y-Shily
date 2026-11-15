@@ -1,49 +1,185 @@
-// Todo el contenido "de catálogo": plantas, mascotas, ropita, preguntas, ideas.
+// Todo el contenido "de catálogo": plantas, animalitos, muebles, ropa, preguntas, ideas.
 export type Art = { lottie?: string; img?: string }
 
-export type Species = Art & { id: string; name: string; days: number; price: number; type: 'flor' | 'huerta' | 'árbol'; harvest?: number; note: string }
+// ───────────────────────── Jardín ─────────────────────────
+/**
+ * flor: florece y da néctar · huerta: se cosecha una vez (va a la despensa)
+ * frutal: florece y da frutas para siempre · árbol: grande, da mucho néctar
+ */
+export type PlantType = 'flor' | 'huerta' | 'frutal' | 'árbol'
+export type Species = Art & { id: string; name: string; days: number; price: number; type: PlantType; harvest?: number; note: string }
 export const SPECIES: Species[] = [
+  // flores
   { id: 'tulipan', name: 'Tulipán', lottie: '1f337', days: 3, price: 0, type: 'flor', note: 'La primera de todas. Siempre hay una de regalo.' },
   { id: 'trebol', name: 'Trébol', lottie: '1f340', days: 2, price: 8, type: 'flor', note: 'Dicen que trae suerte. Crece rapidito.' },
   { id: 'margarita', name: 'Margarita', lottie: '1f33c', days: 3, price: 10, type: 'flor', note: 'Sencilla y luminosa.' },
+  { id: 'espiga', name: 'Espiga', img: 'sheaf_of_rice', days: 3, price: 12, type: 'flor', note: 'Se mueve con el viento.' },
+  { id: 'hojitas', name: 'Hojitas al viento', lottie: '1f343', days: 4, price: 14, type: 'flor', note: 'Bailan todo el día.' },
   { id: 'hongo', name: 'Hongo', lottie: '1f344', days: 4, price: 15, type: 'flor', note: 'Le gusta la sombrita.' },
+  { id: 'jacinto', name: 'Jacinto', lottie: '1fabb', days: 4, price: 16, type: 'flor', note: 'Huele a primavera.' },
+  { id: 'jazmin', name: 'Jazmín', img: 'white_flower', days: 4, price: 18, type: 'flor', note: 'Blanquito y perfumado, para las noches de verano.' },
   { id: 'cactus', name: 'Cactus', lottie: '1f335', days: 5, price: 20, type: 'flor', note: 'Paciente, como el amor a distancia.' },
   { id: 'girasol', name: 'Girasol', img: 'sunflower', days: 5, price: 22, type: 'flor', note: 'Siempre mira hacia la luz.' },
-  { id: 'loto', name: 'Flor de loto', img: 'lotus', days: 6, price: 28, type: 'flor', note: 'Florece en calma.' },
+  { id: 'otono', name: 'Hojas de otoño', lottie: '1f342', days: 5, price: 22, type: 'flor', note: 'Tibias, como una tarde de mate.' },
+  { id: 'loto', name: 'Flor de loto', lottie: '1fab7', days: 6, price: 28, type: 'flor', note: 'Florece en calma.' },
   { id: 'rosa', name: 'Rosa', lottie: '1f339', days: 6, price: 30, type: 'flor', note: 'Clásica, para regalar.' },
   { id: 'hibisco', name: 'Hibisco', img: 'hibiscus', days: 6, price: 30, type: 'flor', note: 'Un pedacito de verano.' },
   { id: 'arce', name: 'Hojita de arce', lottie: '1f341', days: 7, price: 35, type: 'flor', note: 'Cambia de color con el tiempo.' },
   { id: 'cerezo', name: 'Flor de cerezo', lottie: '1f338', days: 8, price: 40, type: 'flor', note: 'Delicada y muy especial.' },
+  { id: 'trebol4', name: 'Trébol de cuatro hojas', img: 'four_leaf_clover', days: 9, price: 50, type: 'flor', note: 'Difícil de encontrar. Por eso lo plantamos nosotros.' },
   { id: 'ramo', name: 'Ramo', lottie: '1f490', days: 10, price: 60, type: 'flor', note: 'Un ramo entero, para una ocasión linda.' },
+  // huerta (se cosecha una vez)
+  { id: 'lechuga', name: 'Lechuga', lottie: '1f96c', days: 3, price: 12, type: 'huerta', harvest: 18, note: 'Fresquita y rápida.' },
+  { id: 'cebolla', name: 'Cebolla', lottie: '1f9c5', days: 4, price: 14, type: 'huerta', harvest: 22, note: 'No hace llorar si la cuidan con amor.' },
+  { id: 'ajo', name: 'Ajo', lottie: '1f9c4', days: 4, price: 14, type: 'huerta', harvest: 22, note: 'Para las comidas de la abuela.' },
+  { id: 'zanahoria', name: 'Zanahoria', lottie: '1f955', days: 4, price: 15, type: 'huerta', harvest: 22, note: 'Los conejitos la aman.' },
+  { id: 'arvejas', name: 'Arvejas', lottie: '1fadb', days: 4, price: 16, type: 'huerta', harvest: 24, note: 'Siempre juntitas en la vaina.' },
   { id: 'frutilla', name: 'Frutilla', lottie: '1f353', days: 4, price: 18, type: 'huerta', harvest: 26, note: 'Dulce. Se cosecha y da semillas.' },
-  { id: 'zanahoria', name: 'Zanahoria', lottie: '1f955', days: 4, price: 15, type: 'huerta', harvest: 22, note: 'Para la mascota también.' },
+  { id: 'papa', name: 'Papa', lottie: '1f954', days: 5, price: 18, type: 'huerta', harvest: 28, note: 'Crece escondida bajo la tierra.' },
+  { id: 'pepino', name: 'Pepino', lottie: '1f952', days: 5, price: 18, type: 'huerta', harvest: 28, note: 'Para una ensalada de verano.' },
   { id: 'tomate', name: 'Tomate', lottie: '1f345', days: 5, price: 20, type: 'huerta', harvest: 30, note: 'De la huerta a la mesa.' },
   { id: 'brocoli', name: 'Brócoli', lottie: '1f966', days: 5, price: 20, type: 'huerta', harvest: 28, note: 'Un arbolito comestible.' },
-  { id: 'limon', name: 'Limón', lottie: '1f34b', days: 6, price: 25, type: 'huerta', harvest: 36, note: 'Ácido y brillante.' },
+  { id: 'choclo', name: 'Choclo', lottie: '1f33d', days: 6, price: 22, type: 'huerta', harvest: 34, note: 'Para una humita compartida.' },
+  { id: 'morron', name: 'Morrón', img: 'bell_pepper', days: 6, price: 24, type: 'huerta', harvest: 36, note: 'Rojo brillante.' },
+  { id: 'berenjena', name: 'Berenjena', img: 'eggplant', days: 6, price: 24, type: 'huerta', harvest: 36, note: 'Violeta y elegante.' },
+  { id: 'arandanos', name: 'Arándanos', lottie: '1fad0', days: 6, price: 26, type: 'huerta', harvest: 40, note: 'Chiquitos y llenos de cosas buenas.' },
   { id: 'kiwi', name: 'Kiwi', lottie: '1f95d', days: 7, price: 30, type: 'huerta', harvest: 42, note: 'Verde por dentro.' },
-  { id: 'cerezas', name: 'Cerezas', lottie: '1f352', days: 8, price: 35, type: 'huerta', harvest: 50, note: 'Siempre de a dos.' },
+  { id: 'melon', name: 'Melón', lottie: '1f348', days: 8, price: 32, type: 'huerta', harvest: 50, note: 'Para una tarde de calor.' },
+  { id: 'sandia', name: 'Sandía', lottie: '1f349', days: 8, price: 34, type: 'huerta', harvest: 52, note: 'Gigante y para compartir.' },
+  { id: 'uvas', name: 'Uvas', lottie: '1f347', days: 9, price: 38, type: 'huerta', harvest: 58, note: 'De una parra chiquita.' },
+  { id: 'anana', name: 'Ananá', lottie: '1f34d', days: 10, price: 40, type: 'huerta', harvest: 64, note: 'Tropical y con corona.' },
+  // frutales (dan frutas para siempre)
+  { id: 'limonero', name: 'Limonero', lottie: '1f34b', days: 10, price: 55, type: 'frutal', note: 'Da limones para siempre. Ácido y brillante.' },
+  { id: 'mandarino', name: 'Mandarino', lottie: '1f34a', days: 10, price: 55, type: 'frutal', note: 'Mandarinas para el invierno.' },
+  { id: 'manzano', name: 'Manzano', lottie: '1f34e', days: 11, price: 60, type: 'frutal', note: 'Una manzana por día.' },
+  { id: 'peral', name: 'Peral', lottie: '1f350', days: 11, price: 60, type: 'frutal', note: 'Peras dulces y jugosas.' },
+  { id: 'cerezas', name: 'Cerezo frutal', lottie: '1f352', days: 12, price: 65, type: 'frutal', note: 'Cerezas siempre de a dos.' },
+  { id: 'mango', name: 'Mango', lottie: '1f96d', days: 12, price: 70, type: 'frutal', note: 'Un árbol de vacaciones.' },
+  { id: 'palto', name: 'Palto', lottie: '1f951', days: 12, price: 70, type: 'frutal', note: 'Paltas para el desayuno.' },
+  // árboles
   { id: 'pino', name: 'Pino', lottie: '1f332', days: 12, price: 70, type: 'árbol', note: 'Crece lento y queda para siempre.' },
   { id: 'arbol', name: 'Árbol', img: 'deciduous_tree', days: 14, price: 80, type: 'árbol', note: 'Nuestro árbol. Da sombra a todo el jardín.' },
   { id: 'palmera', name: 'Palmera', img: 'palm_tree', days: 14, price: 80, type: 'árbol', note: 'Para soñar con un viaje juntos.' },
+  { id: 'deseos', name: 'Árbol de los deseos', img: 'tanabata_tree', days: 14, price: 90, type: 'árbol', note: 'Tiene papelitos colgados con deseos.' },
 ]
 export const speciesById = (id: string) => SPECIES.find((s) => s.id === id) ?? SPECIES[0]
+export const TYPE_LABEL: Record<PlantType, string> = { flor: 'Flores', huerta: 'Huerta', frutal: 'Frutales', árbol: 'Árboles' }
 export const BASE_PLOTS = 6
-export const MAX_PLOTS = 12
+export const MAX_PLOTS = 16
 export const PLOT_PRICE = 50
 
-export type PetSpecies = { id: string; name: string; lottie: string }
-export const PETS: PetSpecies[] = [
-  { id: 'zorrito', name: 'Zorrito', lottie: '1f98a' },
-  { id: 'gatito', name: 'Gatito', lottie: '1f431' },
-  { id: 'panda', name: 'Panda', lottie: '1f43c' },
-  { id: 'osito', name: 'Osito', lottie: '1f43b' },
-  { id: 'leoncito', name: 'Leoncito', lottie: '1f981' },
-  { id: 'lobito', name: 'Lobito', lottie: '1f43a' },
-  { id: 'vaquita', name: 'Vaquita', lottie: '1f42e' },
+/** Mejoras para siempre. */
+export type Upgrade = Art & { id: string; name: string; price: number; desc: string }
+export const UPGRADES: Upgrade[] = [
+  { id: 'regadera', name: 'Regadera grande', img: 'bucket', price: 60, desc: 'La tierra queda húmeda 36 horas en vez de 24. Pueden pasar menos seguido.' },
+  { id: 'farolitos', name: 'Farolitos', img: 'red_paper_lantern', price: 70, desc: 'Las plantas guardan el doble de néctar y de noche el jardín se ilumina.' },
+  { id: 'colmena', name: 'Colmena', img: 'honey_pot', price: 90, desc: 'Llegan abejitas: el néctar sale más rápido.' },
+  { id: 'bebedero', name: 'Bebedero de pajaritos', img: 'fountain', price: 50, desc: 'Vienen pajaritos de visita. Solo porque es lindo.' },
+  { id: 'invernadero', name: 'Invernadero', img: 'house_with_garden', price: 120, desc: 'Todo crece un 25% más rápido.' },
 ]
-export const petById = (id: string) => PETS.find((p) => p.id === id) ?? PETS[0]
+/** Cosas que se usan y se gastan. */
+export const SUPPLIES: (Upgrade & { id: 'abono' | 'lluvia' })[] = [
+  { id: 'abono', name: 'Abono', img: 'package', price: 12, desc: 'Una plantita crece 12 horas de golpe.' },
+  { id: 'lluvia', name: 'Lluvia mágica', img: 'umbrella_with_rain_drops', price: 25, desc: 'Riega todo el jardín como si fueran los dos, por un día entero.' },
+]
 
-export type Wear = { id: string; name: string; img: string; slot: 'cabeza' | 'cara' | 'cuello' | 'ropero' | 'juguete'; price: number }
+// ───────────────────────── Casita ─────────────────────────
+export type Gait = 'walk' | 'hop' | 'waddle' | 'slow'
+/** faces: hacia dónde mira el dibujo original (para darlo vuelta al caminar). */
+export type PetSpecies = { id: string; name: string; img: string; faces: 'left' | 'right'; size: number; gait: Gait }
+export const PETS: PetSpecies[] = [
+  { id: 'gatito', name: 'Gatito', img: 'cat', faces: 'left', size: 1, gait: 'walk' },
+  { id: 'gatito-negro', name: 'Gatito negro', img: 'black_cat', faces: 'right', size: 1, gait: 'walk' },
+  { id: 'perrito', name: 'Perrito', img: 'dog', faces: 'left', size: 1.05, gait: 'walk' },
+  { id: 'caniche', name: 'Caniche', img: 'poodle', faces: 'left', size: 1.05, gait: 'walk' },
+  { id: 'conejito', name: 'Conejito', img: 'rabbit', faces: 'left', size: 0.95, gait: 'hop' },
+  { id: 'ardillita', name: 'Ardillita', img: 'chipmunk', faces: 'left', size: 0.9, gait: 'hop' },
+  { id: 'erizo', name: 'Erizo', img: 'hedgehog', faces: 'left', size: 0.85, gait: 'walk' },
+  { id: 'ratoncito', name: 'Ratoncito', img: 'mouse', faces: 'left', size: 0.75, gait: 'walk' },
+  { id: 'chanchito', name: 'Chanchito', img: 'pig', faces: 'left', size: 1, gait: 'walk' },
+  { id: 'ovejita', name: 'Ovejita', img: 'ewe', faces: 'left', size: 1.05, gait: 'walk' },
+  { id: 'llamita', name: 'Llamita', img: 'llama', faces: 'left', size: 1.15, gait: 'walk' },
+  { id: 'pinguino', name: 'Pingüino', img: 'penguin', faces: 'left', size: 0.95, gait: 'waddle' },
+  { id: 'patito', name: 'Patito', img: 'duck', faces: 'left', size: 0.9, gait: 'waddle' },
+  { id: 'pollito', name: 'Pollito', img: 'baby_chick', faces: 'left', size: 0.72, gait: 'hop' },
+  { id: 'pajarito', name: 'Pajarito', img: 'bird', faces: 'left', size: 0.75, gait: 'hop' },
+  { id: 'buho', name: 'Búho', img: 'owl', faces: 'left', size: 0.85, gait: 'hop' },
+  { id: 'tortuguita', name: 'Tortuguita', img: 'turtle', faces: 'left', size: 0.85, gait: 'slow' },
+  { id: 'caracol', name: 'Caracolito', img: 'snail', faces: 'left', size: 0.7, gait: 'slow' },
+]
+// Las mascotas de la primera versión eran caritas; ahora cada una tiene cuerpito entero.
+const LEGACY_PET: Record<string, string> = { zorrito: 'ardillita', panda: 'conejito', osito: 'perrito', leoncito: 'gatito', lobito: 'caniche', vaquita: 'chanchito' }
+export const petById = (id: string) => PETS.find((p) => p.id === (LEGACY_PET[id] ?? id)) ?? PETS[0]
+/** Cuánto cuesta adoptar al 1º, 2º, 3º… animalito. */
+export const PET_PRICES = [0, 60, 100, 150, 200]
+
+export type Trait = { id: string; name: string; desc: string; sleep: number; play: number; walk: number; cuddle: number }
+export const TRAITS: Trait[] = [
+  { id: 'dormilon', name: 'Dormilón', desc: 'Encuentra cualquier excusa para una siesta.', sleep: 3, play: 1, walk: 1, cuddle: 1 },
+  { id: 'jugueton', name: 'Juguetón', desc: 'Si ve una pelotita, ya fue.', sleep: 1, play: 3, walk: 2, cuddle: 1 },
+  { id: 'curioso', name: 'Curioso', desc: 'Recorre la casa revisando todo.', sleep: 1, play: 1, walk: 3, cuddle: 1 },
+  { id: 'mimoso', name: 'Mimoso', desc: 'Siempre se acerca a saludar.', sleep: 1, play: 1, walk: 1, cuddle: 3 },
+  { id: 'tranqui', name: 'Tranqui', desc: 'Mira por la ventana y disfruta.', sleep: 2, play: 1, walk: 1, cuddle: 2 },
+]
+
+export type DecoSlot = 'pared' | 'estante' | 'techo' | 'sillon' | 'rincon' | 'cama' | 'juguete'
+export type Deco = { id: string; name: string; img: string; slot: DecoSlot; price: number }
+export const DECO_SLOTS: { id: DecoSlot; name: string }[] = [
+  { id: 'pared', name: 'Pared' },
+  { id: 'estante', name: 'Estante' },
+  { id: 'techo', name: 'Luz' },
+  { id: 'sillon', name: 'Mueble' },
+  { id: 'rincon', name: 'Rincón' },
+  { id: 'cama', name: 'Camita' },
+  { id: 'juguete', name: 'Juguete' },
+]
+export const DECO: Deco[] = [
+  { id: 'framed_picture', name: 'Cuadrito', img: 'framed_picture', slot: 'pared', price: 30 },
+  { id: 'mirror', name: 'Espejo', img: 'mirror', slot: 'pared', price: 35 },
+  { id: 'kite', name: 'Barrilete', img: 'kite', slot: 'pared', price: 25 },
+  { id: 'wind_chime', name: 'Campanita de viento', img: 'wind_chime', slot: 'pared', price: 30 },
+  { id: 'books', name: 'Libros', img: 'books', slot: 'estante', price: 20 },
+  { id: 'candle', name: 'Velita', img: 'candle', slot: 'estante', price: 15 },
+  { id: 'teapot', name: 'Tetera', img: 'teapot', slot: 'estante', price: 25 },
+  { id: 'mantelpiece_clock', name: 'Reloj', img: 'mantelpiece_clock', slot: 'estante', price: 35 },
+  { id: 'radio', name: 'Radio', img: 'radio', slot: 'estante', price: 40 },
+  { id: 'nesting_dolls', name: 'Mamushkas', img: 'nesting_dolls', slot: 'estante', price: 40 },
+  { id: 'crystal_ball', name: 'Bola de cristal', img: 'crystal_ball', slot: 'estante', price: 45 },
+  { id: 'light_bulb', name: 'Lamparita', img: 'light_bulb', slot: 'techo', price: 15 },
+  { id: 'red_paper_lantern', name: 'Farolito', img: 'red_paper_lantern', slot: 'techo', price: 30 },
+  { id: 'mirror_ball', name: 'Bola espejada', img: 'mirror_ball', slot: 'techo', price: 50 },
+  { id: 'chair', name: 'Silla', img: 'chair', slot: 'sillon', price: 25 },
+  { id: 'guitar', name: 'Guitarra', img: 'guitar', slot: 'sillon', price: 50 },
+  { id: 'couch_and_lamp', name: 'Sillón con lámpara', img: 'couch_and_lamp', slot: 'sillon', price: 70 },
+  { id: 'bathtub', name: 'Bañera', img: 'bathtub', slot: 'sillon', price: 60 },
+  { id: 'potted_plant', name: 'Plantita', img: 'potted_plant', slot: 'rincon', price: 0 },
+  { id: 'cactus', name: 'Cactus', img: 'cactus', slot: 'rincon', price: 15 },
+  { id: 'evergreen_tree', name: 'Arbolito', img: 'evergreen_tree', slot: 'rincon', price: 45 },
+  { id: 'basket', name: 'Canastita', img: 'basket', slot: 'cama', price: 0 },
+  { id: 'bed', name: 'Cama grande', img: 'bed', slot: 'cama', price: 80 },
+  { id: 'yarn', name: 'Ovillo', img: 'yarn', slot: 'juguete', price: 15 },
+  { id: 'softball', name: 'Pelotita', img: 'softball', slot: 'juguete', price: 15 },
+  { id: 'soccer_ball', name: 'Pelota', img: 'soccer_ball', slot: 'juguete', price: 20 },
+  { id: 'teddy_bear', name: 'Peluche', img: 'teddy_bear', slot: 'juguete', price: 35 },
+  { id: 'balloon', name: 'Globito', img: 'balloon', slot: 'juguete', price: 15 },
+]
+export const decoById = (id?: string | null) => DECO.find((d) => d.id === id)
+
+/** Comida de siempre (no se gasta). La de la huerta sale de la despensa. */
+export const BASIC_FOOD = { id: 'galletita', name: 'Galletitas', img: 'cookie' }
+
+// ───────────────────────── Placard ─────────────────────────
+export type WearSlot = 'cabeza' | 'arriba' | 'enterito' | 'abajo' | 'pies' | 'cartera' | 'accesorio'
+export type Wear = { id: string; name: string; img: string; slot: WearSlot; price: number }
+export const WEAR_SLOTS: { id: WearSlot; name: string }[] = [
+  { id: 'cabeza', name: 'Cabeza' },
+  { id: 'arriba', name: 'Arriba' },
+  { id: 'enterito', name: 'Vestidos y enteritos' },
+  { id: 'abajo', name: 'Abajo' },
+  { id: 'pies', name: 'Calzado' },
+  { id: 'cartera', name: 'Carteras' },
+  { id: 'accesorio', name: 'Accesorios' },
+]
 export const WEAR: Wear[] = [
   { id: 'ribbon', name: 'Moñito', img: 'ribbon', slot: 'cabeza', price: 25 },
   { id: 'billed_cap', name: 'Gorrita', img: 'billed_cap', slot: 'cabeza', price: 30 },
@@ -51,31 +187,42 @@ export const WEAR: Wear[] = [
   { id: 'womans_hat', name: 'Sombrero con flor', img: 'womans_hat', slot: 'cabeza', price: 45 },
   { id: 'graduation_cap', name: 'Birrete', img: 'graduation_cap', slot: 'cabeza', price: 50 },
   { id: 'crown', name: 'Coronita', img: 'crown', slot: 'cabeza', price: 80 },
-  { id: 'glasses', name: 'Anteojos', img: 'glasses', slot: 'cara', price: 30 },
-  { id: 'sunglasses', name: 'Anteojos de sol', img: 'sunglasses', slot: 'cara', price: 35 },
-  { id: 'scarf', name: 'Bufanda', img: 'scarf', slot: 'cuello', price: 30 },
-  { id: 'necktie', name: 'Corbata', img: 'necktie', slot: 'cuello', price: 25 },
-  { id: 't-shirt', name: 'Remera', img: 't-shirt', slot: 'ropero', price: 20 },
-  { id: 'jeans', name: 'Jean', img: 'jeans', slot: 'ropero', price: 25 },
-  { id: 'dress', name: 'Vestido', img: 'dress', slot: 'ropero', price: 35 },
-  { id: 'womans_clothes', name: 'Blusa', img: 'womans_clothes', slot: 'ropero', price: 30 },
-  { id: 'coat', name: 'Tapado', img: 'coat', slot: 'ropero', price: 40 },
-  { id: 'kimono', name: 'Kimono', img: 'kimono', slot: 'ropero', price: 45 },
-  { id: 'shorts', name: 'Short', img: 'shorts', slot: 'ropero', price: 20 },
-  { id: 'socks', name: 'Medias', img: 'socks', slot: 'ropero', price: 15 },
-  { id: 'gloves', name: 'Guantes', img: 'gloves', slot: 'ropero', price: 20 },
-  { id: 'running_shoe', name: 'Zapatillas', img: 'running_shoe', slot: 'ropero', price: 30 },
-  { id: 'flat_shoe', name: 'Chatitas', img: 'flat_shoe', slot: 'ropero', price: 30 },
-  { id: 'ballet_shoes', name: 'Zapatillas de ballet', img: 'ballet_shoes', slot: 'ropero', price: 35 },
-  { id: 'thong_sandal', name: 'Ojotas', img: 'thong_sandal', slot: 'ropero', price: 15 },
-  { id: 'handbag', name: 'Cartera', img: 'handbag', slot: 'ropero', price: 45 },
-  { id: 'purse', name: 'Monedero', img: 'purse', slot: 'ropero', price: 25 },
-  { id: 'teddy_bear', name: 'Osito de peluche', img: 'teddy_bear', slot: 'juguete', price: 35 },
-  { id: 'yarn', name: 'Ovillo', img: 'yarn', slot: 'juguete', price: 15 },
-  { id: 'basket', name: 'Canastita para dormir', img: 'basket', slot: 'juguete', price: 30 },
-  { id: 'bubbles', name: 'Burbujas', img: 'bubbles', slot: 'juguete', price: 20 },
+  { id: 't-shirt', name: 'Remera', img: 't-shirt', slot: 'arriba', price: 0 },
+  { id: 'womans_clothes', name: 'Blusa', img: 'womans_clothes', slot: 'arriba', price: 30 },
+  { id: 'coat', name: 'Tapado', img: 'coat', slot: 'arriba', price: 40 },
+  { id: 'dress', name: 'Vestido', img: 'dress', slot: 'enterito', price: 35 },
+  { id: 'kimono', name: 'Kimono', img: 'kimono', slot: 'enterito', price: 45 },
+  { id: 'sari', name: 'Sari', img: 'sari', slot: 'enterito', price: 50 },
+  { id: 'one_piece_swimsuit', name: 'Malla', img: 'one_piece_swimsuit', slot: 'enterito', price: 30 },
+  { id: 'jeans', name: 'Jean', img: 'jeans', slot: 'abajo', price: 0 },
+  { id: 'shorts', name: 'Short', img: 'shorts', slot: 'abajo', price: 20 },
+  { id: 'running_shoe', name: 'Zapatillas', img: 'running_shoe', slot: 'pies', price: 0 },
+  { id: 'flat_shoe', name: 'Chatitas', img: 'flat_shoe', slot: 'pies', price: 30 },
+  { id: 'ballet_shoes', name: 'Zapatillas de ballet', img: 'ballet_shoes', slot: 'pies', price: 35 },
+  { id: 'high_heeled_shoe', name: 'Tacos', img: 'high_heeled_shoe', slot: 'pies', price: 40 },
+  { id: 'womans_boot', name: 'Botas', img: 'womans_boot', slot: 'pies', price: 45 },
+  { id: 'womans_sandal', name: 'Sandalias', img: 'womans_sandal', slot: 'pies', price: 30 },
+  { id: 'hiking_boot', name: 'Borcegos', img: 'hiking_boot', slot: 'pies', price: 40 },
+  { id: 'mans_shoe', name: 'Zapatos', img: 'mans_shoe', slot: 'pies', price: 35 },
+  { id: 'thong_sandal', name: 'Ojotas', img: 'thong_sandal', slot: 'pies', price: 15 },
+  { id: 'socks', name: 'Medias', img: 'socks', slot: 'pies', price: 15 },
+  { id: 'handbag', name: 'Cartera', img: 'handbag', slot: 'cartera', price: 45 },
+  { id: 'purse', name: 'Monedero', img: 'purse', slot: 'cartera', price: 25 },
+  { id: 'clutch_bag', name: 'Sobre', img: 'clutch_bag', slot: 'cartera', price: 35 },
+  { id: 'backpack', name: 'Mochila', img: 'backpack', slot: 'cartera', price: 35 },
+  { id: 'shopping_bags', name: 'Bolsas de compras', img: 'shopping_bags', slot: 'cartera', price: 30 },
+  { id: 'glasses', name: 'Anteojos', img: 'glasses', slot: 'accesorio', price: 30 },
+  { id: 'sunglasses', name: 'Anteojos de sol', img: 'sunglasses', slot: 'accesorio', price: 35 },
+  { id: 'scarf', name: 'Bufanda', img: 'scarf', slot: 'accesorio', price: 30 },
+  { id: 'gloves', name: 'Guantes', img: 'gloves', slot: 'accesorio', price: 20 },
+  { id: 'necktie', name: 'Corbata', img: 'necktie', slot: 'accesorio', price: 25 },
+  { id: 'prayer_beads', name: 'Collar de cuentas', img: 'prayer_beads', slot: 'accesorio', price: 40 },
+  { id: 'ring', name: 'Anillo', img: 'ring', slot: 'accesorio', price: 60 },
+  { id: 'lipstick', name: 'Labial', img: 'lipstick', slot: 'accesorio', price: 20 },
+  { id: 'folding_hand_fan', name: 'Abanico', img: 'folding_hand_fan', slot: 'accesorio', price: 30 },
+  { id: 'closed_umbrella', name: 'Paraguas', img: 'closed_umbrella', slot: 'accesorio', price: 25 },
 ]
-export const wearById = (id: string) => WEAR.find((w) => w.id === id)
+export const wearById = (id?: string | null) => WEAR.find((w) => w.id === id)
 
 export const MOODS = [
   { id: 'feliz', label: 'Feliz', lottie: '1f60a' },

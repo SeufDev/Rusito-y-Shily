@@ -1,0 +1,99 @@
+/* ---------- jardín 2.0 ---------- */
+.garden-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.garden2 {
+  --sky-a: #cfe5f3; --sky-b: #f1f6e8; --grass-a: #c4dcae; --grass-b: #a9c991; --hill-1: #b7d39f; --hill-2: #9fc489;
+  --wood-a: #cf9a6a; --wood-b: #a97448; --soil-dry: #c9a682; --soil-wet: #5a3d2b;
+  position: relative; border-radius: 34px; overflow: hidden; isolation: isolate;
+  background: linear-gradient(180deg, var(--sky-a) 0, var(--sky-b) 150px, var(--grass-b) 151px);
+  border: 1px solid var(--line); box-shadow: var(--shadow); padding: 150px 18px 30px;
+}
+.garden2.part-dawn { --sky-a: #f5cfcb; --sky-b: #fbe7d4; }
+.garden2.part-dusk { --sky-a: #e4a99d; --sky-b: #f1cfb0; --grass-a: #b9cf9c; --grass-b: #9cb983; --hill-1: #a9c48f; --hill-2: #8fae7a; }
+.garden2.part-night { --sky-a: #151a3a; --sky-b: #2d3462; --grass-a: #2f4639; --grass-b: #233529; --hill-1: #2b4234; --hill-2: #23372b; --wood-a: #7d5a42; --wood-b: #5e4230; --soil-dry: #6b5444; --soil-wet: #2e1f17; }
+.garden-sky { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.sky-orb { position: absolute; top: 18px; right: 30px; filter: drop-shadow(0 0 18px rgba(255, 220, 140, .8)); animation: orb 9s ease-in-out infinite alternate; }
+.part-night .sky-orb { filter: drop-shadow(0 0 16px rgba(220, 220, 255, .55)); }
+.sky-cloud { position: absolute; opacity: .9; animation: drift 60s linear infinite; }
+.sky-cloud.c1 { top: 22px; left: -10%; }
+.sky-cloud.c2 { top: 54px; left: -10%; animation-duration: 85s; animation-delay: -40s; opacity: .7; }
+.g-star { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; box-shadow: 0 0 6px #fff; animation: twinkle 3.5s ease-in-out infinite; }
+.hill { position: absolute; border-radius: 50%; }
+.hill.h1 { left: -12%; right: 38%; top: 100px; height: 220px; background: var(--hill-1); }
+.hill.h2 { left: 34%; right: -16%; top: 114px; height: 220px; background: var(--hill-2); }
+.ground { position: absolute; left: -5%; right: -5%; top: 146px; height: 1400px; border-radius: 50% 50% 0 0 / 18px 18px 0 0; background: linear-gradient(180deg, var(--grass-a), var(--grass-b) 380px); box-shadow: 0 -2px 10px rgba(60, 90, 40, .12); }
+.garden-props { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.prop { position: absolute; filter: drop-shadow(0 8px 10px rgba(40, 60, 30, .25)); }
+.prop-l { left: 20px; top: 92px; }
+.prop-r { right: 96px; top: 112px; }
+.prop-r2 { right: 150px; top: 104px; }
+.g-lanterns { position: absolute; inset: 0 0 auto 0; height: 120px; z-index: 1; pointer-events: none; }
+.g-string { position: absolute; inset: 6px 0 auto 0; width: 100%; height: 44px; fill: none; stroke: rgba(90, 70, 50, .45); stroke-width: .5; }
+.part-night .g-string { stroke: rgba(255, 230, 200, .35); }
+.g-lantern { position: absolute; transform: translateX(-50%); transform-origin: 50% 0; animation: swing 4.2s ease-in-out infinite alternate; }
+.g-lanterns.lit .g-lantern img { filter: drop-shadow(0 0 10px rgba(255, 170, 90, .95)) drop-shadow(0 0 24px rgba(255, 140, 70, .6)); }
+.beds2 { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 26px 14px; }
+.planter { position: relative; height: 178px; border: 0; padding: 0; background: none; color: inherit; cursor: pointer; }
+.plant-slot { position: absolute; left: 0; right: 0; bottom: 56px; height: 118px; display: flex; align-items: flex-end; justify-content: center; z-index: 2; pointer-events: none; }
+.planter-soil { position: absolute; left: 11%; right: 11%; bottom: 40px; height: 28px; border-radius: 50%; z-index: 1; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--soil-wet) calc(var(--wet) * 100%), var(--soil-dry)), color-mix(in oklab, color-mix(in oklab, var(--soil-wet) calc(var(--wet) * 100%), var(--soil-dry)) 80%, #000));
+  box-shadow: inset 0 5px 9px rgba(0, 0, 0, .28); transition: background 1.4s var(--ease); }
+.planter-soil .glint { position: absolute; inset: 0; opacity: calc(var(--wet) * .9); transition: opacity 1.4s;
+  background: radial-gradient(circle at 30% 40%, rgba(255,255,255,.55) 0 1.5px, transparent 2.5px), radial-gradient(circle at 62% 55%, rgba(255,255,255,.45) 0 1.2px, transparent 2px), radial-gradient(circle at 78% 35%, rgba(255,255,255,.4) 0 1px, transparent 2px), radial-gradient(circle at 45% 70%, rgba(255,255,255,.35) 0 1px, transparent 2px); }
+.planter-box { position: absolute; left: 6%; right: 6%; bottom: 0; height: 56px; border-radius: 10px 10px 18px 18px;
+  background: repeating-linear-gradient(90deg, transparent 0 calc(33.3% - 1px), rgba(60, 30, 10, .16) calc(33.3% - 1px) 33.3%), linear-gradient(180deg, var(--wood-a), var(--wood-b));
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, .22), inset 0 -6px 10px rgba(0, 0, 0, .15), 0 10px 18px -8px rgba(40, 30, 10, .45); transition: filter .25s; }
+.planter-box::before { content: ''; position: absolute; left: -4%; right: -4%; top: -6px; height: 12px; border-radius: 8px; background: linear-gradient(180deg, color-mix(in srgb, var(--wood-a) 80%, #fff), var(--wood-a)); box-shadow: 0 2px 3px rgba(0, 0, 0, .12); }
+.planter:hover .planter-box { filter: brightness(1.06); }
+.planter-bar { position: absolute; left: 20%; right: 20%; bottom: 10px; height: 5px; border-radius: 5px; background: rgba(255, 255, 255, .28); overflow: hidden; }
+.planter-bar i { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, #e7f6d5, #fff); }
+.drops2 { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 3; }
+.drop2 { width: 10px; height: 10px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: rgba(255, 255, 255, .35); transition: background .6s, box-shadow .6s; }
+.drop2.on { background: #8cc8ec; box-shadow: 0 0 0 2px var(--c); }
+.plant-name { position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 700; padding: 1px 9px; border-radius: 999px; background: var(--card-solid); color: var(--ink); box-shadow: 0 2px 6px rgba(0, 0, 0, .1); max-width: 110%; overflow: hidden; text-overflow: ellipsis; }
+.planter.empty .planter-soil { filter: saturate(.8); }
+.planter.empty .bed-plus { display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 6px; border-radius: 50%; border: 1.5px dashed rgba(255, 255, 255, .8); color: #fff; background: rgba(255, 255, 255, .14); transition: all .25s; }
+.planter.empty:hover .bed-plus { background: rgba(255, 255, 255, .32); transform: scale(1.06); }
+.nectar { position: absolute; top: -6px; left: 50%; z-index: 4; display: grid; place-items: center; width: 42px; height: 42px; margin-left: -21px; border-radius: 50%; cursor: pointer;
+  background: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, .95), rgba(255, 246, 214, .75) 34%, rgba(246, 205, 120, .55) 70%, rgba(236, 176, 80, .5));
+  border: 1px solid rgba(255, 255, 255, .8); box-shadow: 0 8px 18px -6px rgba(200, 140, 40, .55), inset 0 -3px 6px rgba(220, 150, 40, .25); animation: bob 2.8s ease-in-out infinite; }
+.nectar.fruit { background: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, .95), rgba(255, 255, 255, .6) 45%, rgba(220, 240, 210, .5)); box-shadow: 0 8px 18px -6px rgba(80, 140, 60, .45); }
+.nectar .honey { width: 13px; height: 13px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: radial-gradient(circle at 35% 35%, #ffe7a3, #e9a93c); box-shadow: 0 0 10px rgba(255, 190, 80, .9); }
+.nectar b { position: absolute; right: -6px; bottom: -4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: 11.5px; line-height: 20px; text-align: center; }
+.sway { display: inline-flex; align-items: flex-end; justify-content: center; transform-origin: 50% 100%; animation: sway var(--sway-d, 4s) ease-in-out var(--sway-delay, 0s) infinite alternate; }
+.sway .plant { filter: drop-shadow(0 6px 5px rgba(40, 50, 20, .18)); }
+.sway .plant.bud { filter: saturate(.5) brightness(1.04) drop-shadow(0 6px 5px rgba(40, 50, 20, .18)); }
+.bush { position: relative; display: inline-block; }
+.fruit-on { position: absolute; transform: translate(-50%, -50%); transform-origin: 50% 0; animation: fruit 3.2s ease-in-out infinite alternate; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .18)); line-height: 0; }
+.fruit-on.unripe { filter: saturate(.25) hue-rotate(45deg) brightness(1.12); }
+.rain2 { position: absolute; inset: 0; z-index: 5; pointer-events: none; background: linear-gradient(180deg, rgba(120, 150, 190, .12), transparent 60%); }
+.rain2 i { position: absolute; top: -20px; width: 2px; height: 18px; border-radius: 2px; background: linear-gradient(180deg, transparent, rgba(170, 210, 240, .95)); animation: fall linear infinite; }
+.glowbug { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #fff8b8; box-shadow: 0 0 8px 3px rgba(255, 240, 150, .75); animation: glowbug 7s ease-in-out infinite; }
+.plot-hero2 { position: relative; height: 200px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 26px; }
+.hero-glow { position: absolute; inset: 10% 20% 0; border-radius: 50%; background: radial-gradient(circle, var(--sage-soft), transparent 70%); }
+.hero-soil { position: absolute; bottom: 14px; left: 50%; width: 150px; height: 26px; margin-left: -75px; border-radius: 50%; background: radial-gradient(ellipse at 50% 30%, var(--soil), var(--soil-2)); box-shadow: inset 0 4px 8px rgba(0, 0, 0, .2); z-index: 0; }
+.plot-hero2 .sway { position: relative; z-index: 1; margin-bottom: 4px; }
+.herb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+.herb-page { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; padding: 18px 12px 14px; border-radius: 6px 6px 14px 14px;
+  background: repeating-linear-gradient(180deg, transparent 0 23px, rgba(120, 100, 70, .07) 23px 24px), #fffcf3; color: #4a4038; border: 1px solid rgba(120, 100, 70, .14); box-shadow: 0 10px 22px -14px rgba(60, 40, 20, .4); }
+.herb-page .muted { color: #8b7f70; }
+.herb-page b { font-size: 17px; }
+.fly-bit { position: fixed; z-index: 200; width: 26px; height: 26px; pointer-events: none; filter: drop-shadow(0 0 6px rgba(255, 220, 120, .9)); }
+@keyframes sway { from { rotate: calc(var(--sway-a, 3deg) * -1); } to { rotate: var(--sway-a, 3deg); } }
+@keyframes fruit { from { rotate: -6deg; } to { rotate: 6deg; } }
+@keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
+@keyframes swing { from { rotate: -5deg; } to { rotate: 5deg; } }
+@keyframes drift { from { translate: 0 0; } to { translate: 130vw 0; } }
+@keyframes orb { from { translate: 0 0; } to { translate: -8px 6px; } }
+@keyframes twinkle { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+@keyframes fall { from { translate: 0 0; } to { translate: -24px 620px; } }
+@keyframes glowbug { 0% { translate: 0 0; opacity: .1; } 25% { translate: 18px -14px; opacity: 1; } 50% { translate: -6px -30px; opacity: .3; } 75% { translate: -22px -8px; opacity: .95; } 100% { translate: 0 0; opacity: .1; } }
+@media (max-width: 560px) {
+  .garden2 { padding: 140px 10px 26px; border-radius: 26px; }
+  .beds2 { grid-template-columns: repeat(3, 1fr); gap: 24px 8px; }
+  .planter { height: 150px; }
+  .plant-slot { bottom: 48px; height: 98px; }
+  .planter-soil { bottom: 34px; height: 22px; }
+  .planter-box { height: 46px; }
+  .prop-r, .prop-r2 { display: none; }
+}
+:root[data-calm='1'] .sway, :root[data-calm='1'] .fruit-on, :root[data-calm='1'] .nectar, :root[data-calm='1'] .g-lantern, :root[data-calm='1'] .sky-cloud, :root[data-calm='1'] .sky-orb, :root[data-calm='1'] .glowbug, :root[data-calm='1'] .g-star { animation: none; }

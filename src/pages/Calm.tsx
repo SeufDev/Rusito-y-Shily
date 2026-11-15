@@ -1,10 +1,19 @@
 import { AnimatePresence, motion } from 'motion/react'
-import { Pause, Play, Plus, Shuffle } from 'lucide-react'
+import { ArrowLeft, Pause, Play, Plus, Shuffle } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Art } from '../components/Art'
-import { Empty, Modal, PageHead, Segmented, useToast } from '../components/ui'
+import { Empty, Modal, Segmented, useToast } from '../components/ui'
 import type { Who } from '../lib/config'
 import { useItems, usePeople, useStore } from '../lib/store'
+import { Pond } from '../components/calm/Pond'
+import { Sand } from '../components/calm/Sand'
+import { Lanterns } from '../components/calm/Lanterns'
+import { CHANNELS, Sounds } from '../components/calm/Sounds'
+import { useAmbient } from '../lib/ambient'
+import { useGame } from '../lib/game'
+import { petById } from '../lib/content'
+import { dayPart, hash } from '../lib/dates'
+import '../styles/calm.css'
 
 const PATTERNS = {
   suave: { label: 'Suave · 4 · 2 · 6', steps: [['Inhalá', 4, 1], ['Sostené', 2, 1], ['Soltá despacio', 6, 0]] },
@@ -22,17 +31,85 @@ const KIND_WORDS = [
   'Merecés la misma paciencia que le das a los demás.',
 ]
 
+type Act = 'respirar' | 'anclar' | 'estanque' | 'arena' | 'farolitos' | 'sonidos' | 'grises'
+const ACTS: { id: Act; title: string; sub: string; art: { lottie?: string; img?: string } }[] = [
+  { id: 'respirar', title: 'Respirar', sub: 'Una burbuja que crece y se achica con vos.', art: { img: 'wind_face' } },
+  { id: 'estanque', title: 'El estanque', sub: 'Kois que nadan tranquilos. Tocá el agua.', art: { lottie: '1f41f' } },
+  { id: 'arena', title: 'Arena zen', sub: 'Rastrillar, dejar piedritas, alisar.', art: { img: 'rock' } },
+  { id: 'farolitos', title: 'Farolitos', sub: 'Escribí algo que pesa y soltalo.', art: { img: 'red_paper_lantern' } },
+  { id: 'sonidos', title: 'Sonidos', sub: 'Lluvia, olas, fueguito, grillos…', art: { lottie: '1f327' } },
+  { id: 'anclar', title: 'Volver al cuerpo', sub: '5 cosas que ves, 4 que tocás…', art: { img: 'herb' } },
+  { id: 'grises', title: 'Para días grises', sub: 'Mensajitos que te dejaron para hoy.', art: { lottie: '1f90d' } },
+]
+
 export default function Calm() {
-  const [tab, setTab] = useState<'respirar' | 'anclar' | 'grises'>('respirar')
+  const [act, setAct] = useState<Act | null>(null)
   const word = useMemo(() => KIND_WORDS[new Date().getDate() % KIND_WORDS.length], [])
+  const cur = ACTS.find((a) => a.id === act)
   return (
     <div className="stack-l">
-      <PageHead art={{ lottie: '1f60c' }} title="Rincón tranquilo" sub={word} />
-      <Segmented value={tab} onChange={setTab} options={[{ id: 'respirar', label: 'Respirar' }, { id: 'anclar', label: 'Volver al cuerpo' }, { id: 'grises', label: 'Para días grises' }]} />
-      {tab === 'respirar' && <Breathe />}
-      {tab === 'anclar' && <Ground />}
-      {tab === 'grises' && <Grey />}
+      <Nook word={word} />
+      <AnimatePresence mode="wait">
+        {!cur ? (
+          <motion.div key="grid" className="act-grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            {ACTS.map((a, i) => (
+              <motion.button key={a.id} className={`act act-${a.id}`} onClick={() => setAct(a.id)} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} whileHover={{ y: -3 }}>
+                <Art {...a.art} size={54} play="hover" />
+                <span><b>{a.title}</b><span className="small muted">{a.sub}</span></span>
+              </motion.button>
+            ))}
+          </motion.div>
+        ) : (
+          <motion.div key={cur.id} className="stack-m" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <div className="row gap-s act-head">
+              <button className="btn ghost small" onClick={() => setAct(null)}><ArrowLeft size={15} /> Volver al rincón</button>
+              <h2 className="display grow">{cur.title}</h2>
+            </div>
+            {act === 'respirar' && <Breathe />}
+            {act === 'anclar' && <Ground />}
+            {act === 'estanque' && <Pond />}
+            {act === 'arena' && <Sand />}
+            {act === 'farolitos' && <Lanterns />}
+            {act === 'sonidos' && <Sounds />}
+            {act === 'grises' && <Grey />}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
+  )
+}
+
+/** El rinconcito: una ventana (con lluvia si suena lluvia), una velita, un té que humea y algún animalito durmiendo. */
+function Nook({ word }: { word: string }) {
+  const a = useAmbient()
+  const { pets } = useGame()
+  const part = dayPart()
+  const rain = (a.vols.lluvia ?? 0) > 0
+  const fire = (a.vols.fuego ?? 0) > 0
+  const pet = pets[0]
+  const drops = useMemo(() => Array.from({ length: 26 }, (_, i) => ({ x: hash('nr' + i) * 100, d: 0.6 + hash('nd' + i) * 0.5, delay: -hash('nl' + i) }) ), [])
+  return (
+    <section className={`nook part-${part}`}>
+      <div className="nook-window">
+        <div className={`nook-sky ${rain ? 'rainy' : ''}`}>
+          {part === 'night' ? <Art img="crescent_moon" size={34} className="nook-orb" /> : !rain && <Art img="sun" size={34} className="nook-orb" />}
+          {rain && drops.map((r, i) => <i key={i} className="nook-drop" style={{ left: `${r.x}%`, animationDuration: `${r.d}s`, animationDelay: `${r.delay}s` }} />)}
+        </div>
+      </div>
+      <div className="nook-text">
+        <p className="eyebrow">Rincón tranquilo</p>
+        <h1 className="display">{word}</h1>
+        <p className="muted small">{a.playing.length ? `Sonando: ${CHANNELS.filter((c) => a.playing.includes(c.id)).map((c) => c.label.toLowerCase()).join(', ')}.` : 'Elegí lo que tengas ganas. No hay que hacer nada bien.'}</p>
+      </div>
+      <div className="nook-table">
+        <span className="nook-candle"><i className="flame" /><Art img="candle" size={52} /></span>
+        <span className="nook-tea"><i className="steam s1" /><i className="steam s2" /><i className="steam s3" /><Art img="hot_beverage" size={50} /></span>
+        <Art img="books" size={46} />
+        <Art img="potted_plant" size={48} />
+        {pet && <span className="nook-pet" title={`${pet.data.name} duerme acá`}><Art img={petById(pet.data.species).img} size={54} /><span className="a-zzz"><i>z</i><i>z</i><i>z</i></span></span>}
+        {fire && <span className="nook-fire"><Art lottie="1f525" size={40} /></span>}
+      </div>
+    </section>
   )
 }
 

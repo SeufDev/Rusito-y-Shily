@@ -10,6 +10,7 @@ import { seal, unseal } from '../lib/crypto'
 import { dayKey, fmtDay } from '../lib/dates'
 import { useCalmMotion } from '../lib/motion'
 import { useItems, usePeople, useStore } from '../lib/store'
+import { useSections, type SectionId } from '../lib/sections'
 
 type Letter = {
   to: Who
@@ -232,14 +233,15 @@ function HideNote({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { other, P } = usePeople()
   const toast = useToast()
   const [text, setText] = useState('')
-  const [place, setPlace] = useState('/jardin')
+  const [place, setPlace] = useState('/')
+  const { visible } = useSections()
   return (
     <Modal open={open} onClose={onClose} label="Esconder nota">
       <h2 className="display">Esconder una notita</h2>
       <div className="stack-m mt-m">
         <textarea className="input" rows={4} placeholder={`Algo cortito para ${P[other].name}…`} value={text} onChange={(e) => setText(e.target.value)} />
         <p className="small muted">¿Dónde la escondo?</p>
-        <div className="chips">{PLACES.map((p) => <button key={p.id} className={`chip ${place === p.id ? 'on' : ''}`} onClick={() => setPlace(p.id)}>{p.label}</button>)}</div>
+        <div className="chips">{PLACES.filter((p) => p.id === '/' || visible(p.id.slice(1) as SectionId)).map((p) => <button key={p.id} className={`chip ${place === p.id ? 'on' : ''}`} onClick={() => setPlace(p.id)}>{p.label}</button>)}</div>
         <button className="btn primary" disabled={!text.trim()} onClick={async () => {
           await add<Note>('note', { to: other, place, text: text.trim() })
           toast({ text: 'Escondida. Shhh.', art: { lottie: '1f48b' } })

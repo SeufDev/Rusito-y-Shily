@@ -1,6 +1,6 @@
 import { AnimatePresence, MotionConfig, motion } from 'motion/react'
-import { lazy, Suspense, useEffect, useState } from 'react'
-import { HashRouter, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react'
+import { HashRouter, MemoryRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Celebrations } from './components/Celebrations'
 import { HiddenNotes } from './components/HiddenNotes'
 import { Lock } from './components/Lock'
@@ -12,6 +12,7 @@ import { backend } from './lib/backend'
 import type { Who } from './lib/config'
 import { useCalmMotion } from './lib/motion'
 import { StoreProvider } from './lib/store'
+import { useSections, type SectionId } from './lib/sections'
 import Home from './pages/Home'
 import Garden from './pages/Garden'
 import Pet from './pages/Pet'
@@ -50,6 +51,8 @@ export default function App() {
 
 function Shell() {
   const loc = useLocation()
+  const { visible } = useSections()
+  const gate = (id: SectionId, el: ReactNode) => (visible(id) ? el : <Navigate to="/" replace />)
   useEffect(() => { window.scrollTo({ top: 0 }) }, [loc.pathname])
   const full = loc.pathname === '/universo'
   return (
@@ -68,13 +71,14 @@ function Shell() {
             <Suspense fallback={<div className="boot"><div className="boot-dot" /></div>}>
               <Routes location={loc}>
                 <Route path="/" element={<Home />} />
-                <Route path="/universo" element={<Universe />} />
-                <Route path="/jardin" element={<Garden />} />
-                <Route path="/mascota" element={<Pet />} />
-                <Route path="/cartas" element={<Letters />} />
-                <Route path="/recuerdos" element={<Memories />} />
-                <Route path="/juntos" element={<Together />} />
-                <Route path="/calma" element={<Calm />} />
+                <Route path="/universo" element={gate('universo', <Universe />)} />
+                <Route path="/jardin" element={gate('jardin', <Garden />)} />
+                <Route path="/casita" element={gate('casita', <Pet />)} />
+                <Route path="/mascota" element={<Navigate to="/casita" replace />} />
+                <Route path="/cartas" element={gate('cartas', <Letters />)} />
+                <Route path="/recuerdos" element={gate('recuerdos', <Memories />)} />
+                <Route path="/juntos" element={gate('juntos', <Together />)} />
+                <Route path="/calma" element={gate('calma', <Calm />)} />
                 <Route path="/ajustes" element={<Settings />} />
                 <Route path="*" element={<Home />} />
               </Routes>
