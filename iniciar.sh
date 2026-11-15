@@ -15,7 +15,7 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
 fi
 
 if [ ! -f .env.local ]; then
-  echo "Sin .env.local: arranca en modo vista previa (la clave es: nosotros)."
+  echo "Sin .env.local: arranca en modo vista previa (claves: shily y rusito)."
 fi
 
 echo "Abriendo Rusito & Shily en http://localhost:5173 ..."

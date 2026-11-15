@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import { DEMO, DEMO_PASSWORD, SHARED_EMAIL, SUPABASE_ANON_KEY, SUPABASE_URL, type Who } from './config'
+import { DEMO, DEMO_PASSWORDS, EMAILS, SUPABASE_ANON_KEY, SUPABASE_URL, type Who } from './config'
 
 export type Item<T = any> = {
   id: string
@@ -12,8 +12,9 @@ export type Item<T = any> = {
 export type Change = { type: 'upsert'; item: Item } | { type: 'delete'; id: string }
 
 export interface Backend {
-  hasSession(): Promise<boolean>
-  signIn(password: string): Promise<boolean>
+  /** Quién tiene la sesión abierta en este dispositivo (o null). */
+  session(): Promise<Who | null>
+  signIn(who: Who, password: string): Promise<boolean>
   signOut(): Promise<void>
   load(): Promise<Item[]>
   insert(item: Item): Promise<void>
@@ -29,12 +30,16 @@ function supabaseBackend(): Backend {
   const sb: SupabaseClient = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!)
   const urlCache = new Map<string, { url: string; exp: number }>()
   return {
-    async hasSession() {
+    async session() {
       const { data } = await sb.auth.getSession()
-      return !!data.session
+      const email = data.session?.user.email?.toLowerCase()
+      if (!email) return null
+      if (email === EMAILS.a.toLowerCase()) return 'a'
+      if (email === EMAILS.b.toLowerCase()) return 'b'
+      return null
     },
-    async signIn(password) {
-      const { error } = await sb.auth.signInWithPassword({ email: SHARED_EMAIL, password })
+    async signIn(who, password) {
+      const { error } = await sb.auth.signInWithPassword({ email: EMAILS[who], password })
       return !error
     },
     async signOut() {
@@ -117,16 +122,17 @@ function demoBackend(): Backend {
   })
   const emit = (c: Change) => bc?.postMessage(c)
   return {
-    async hasSession() {
+    async session() {
       try {
-        return sessionStorage.getItem('nl-demo-session') === '1' || localStorage.getItem('nl-demo-session') === '1'
+        const v = localStorage.getItem('nl-demo-session')
+        return v === 'a' || v === 'b' ? v : null
       } catch {
-        return false
+        return null
       }
     },
-    async signIn(password) {
-      const ok = password.trim().toLowerCase() === DEMO_PASSWORD
-      if (ok) try { localStorage.setItem('nl-demo-session', '1') } catch { /* */ }
+    async signIn(who, password) {
+      const ok = password.trim().toLowerCase() === DEMO_PASSWORDS[who]
+      if (ok) try { localStorage.setItem('nl-demo-session', who) } catch { /* */ }
       return ok
     },
     async signOut() {

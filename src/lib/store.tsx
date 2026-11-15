@@ -15,7 +15,6 @@ type Ctx = {
   items: Map<string, Item>
   version: number
   me: Who
-  setMe: (w: Who | null) => void
   other: Who
   settings: Settings
   saveSettings: (s: Partial<Settings>) => Promise<void>
@@ -26,19 +25,8 @@ type Ctx = {
 }
 const StoreCtx = createContext<Ctx | null>(null)
 
-const ME_KEY = 'nl-me'
-export function readMe(): Who | null {
-  try {
-    const v = localStorage.getItem(ME_KEY)
-    return v === 'a' || v === 'b' ? v : null
-  } catch {
-    return null
-  }
-}
-
-export function StoreProvider({ picker, children }: { picker: (choose: (w: Who) => void, people: Settings['people']) => ReactNode; children: ReactNode }) {
-  const [meRaw, setMeRaw] = useState<Who | null>(readMe)
-  const me: Who = meRaw ?? 'a'
+/** `me` viene de la cuenta con la que se entró: cada uno tiene su propia clave. */
+export function StoreProvider({ me, children }: { me: Who; children: ReactNode }) {
   const map = useRef(new Map<string, Item>())
   const [version, setVersion] = useState(0)
   const [ready, setReady] = useState(false)
@@ -117,25 +105,18 @@ export function StoreProvider({ picker, children }: { picker: (choose: (w: Who) 
 
   // Cada uno deja anotado su huso horario, así el otro ve qué hora es del otro lado.
   useEffect(() => {
-    if (!ready || !meRaw) return
+    if (!ready) return
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
     const mine = [...map.current.values()].find((i) => i.kind === 'profile' && i.data.who === me)
     if (!mine) add('profile', { who: me, tz, seen: new Date().toISOString() })
     else update(mine.id, { ...mine.data, tz, seen: new Date().toISOString(), lastDay: dayKey() })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, meRaw])
+  }, [ready, me])
 
   const value: Ctx = {
     items: map.current,
     version,
     me,
-    setMe: (w) => {
-      try {
-        if (w) localStorage.setItem(ME_KEY, w)
-        else localStorage.removeItem(ME_KEY)
-      } catch { /* */ }
-      setMeRaw(w)
-    },
     other: me === 'a' ? 'b' : 'a',
     settings,
     saveSettings,
@@ -145,7 +126,7 @@ export function StoreProvider({ picker, children }: { picker: (choose: (w: Who) 
     incoming,
   }
   if (!ready) return <div className="boot"><div className="boot-dot" /></div>
-  return <StoreCtx.Provider value={value}>{meRaw ? children : picker(value.setMe, settings.people)}</StoreCtx.Provider>
+  return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
 }
 
 export function useStore() {

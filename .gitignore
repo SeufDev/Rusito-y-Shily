@@ -23,3 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 dist-preview
+
+# Música: no se sube mientras el repo sea público.
+# Cuando el repo sea privado, borrá estas dos líneas para que las canciones lleguen a la web publicada.
+src/audios/**/*.mp3
+src/audios/*.mp3

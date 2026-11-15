@@ -1,14 +1,15 @@
 import { AnimatePresence, MotionConfig, motion } from 'motion/react'
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { HashRouter, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
-import { Art } from './components/Art'
 import { Celebrations } from './components/Celebrations'
 import { HiddenNotes } from './components/HiddenNotes'
 import { Lock } from './components/Lock'
 import { Nav } from './components/Nav'
+import { Player } from './components/Player'
 import { Sky } from './components/Sky'
 import { ToastHost } from './components/ui'
 import { backend } from './lib/backend'
+import type { Who } from './lib/config'
 import { useCalmMotion } from './lib/motion'
 import { StoreProvider } from './lib/store'
 import Home from './pages/Home'
@@ -24,19 +25,19 @@ const Universe = lazy(() => import('./pages/Universe'))
 const Router = import.meta.env.VITE_ROUTER === 'memory' ? MemoryRouter : HashRouter
 
 export default function App() {
-  const [authed, setAuthed] = useState<boolean | null>(null)
+  const [me, setMe] = useState<Who | null | undefined>(undefined)
   const calm = useCalmMotion()
   useEffect(() => {
-    backend.hasSession().then(setAuthed)
+    backend.session().then(setMe)
   }, [])
   return (
     <MotionConfig reducedMotion={calm ? 'always' : 'never'}>
       <Sky />
-      {authed === null ? null : !authed ? (
-        <Lock onOpen={() => setAuthed(true)} />
+      {me === undefined ? null : !me ? (
+        <Lock onOpen={setMe} />
       ) : (
         <ToastHost>
-          <StoreProvider picker={(choose, people) => <WhoPicker choose={choose} people={people} />}>
+          <StoreProvider me={me}>
             <Router>
               <Shell />
             </Router>
@@ -83,33 +84,7 @@ function Shell() {
       </main>
       <HiddenNotes place={loc.pathname} />
       <Celebrations />
-    </div>
-  )
-}
-
-function WhoPicker({ choose, people }: { choose: (w: 'a' | 'b') => void; people: Record<'a' | 'b', { name: string; animal: string }> }) {
-  return (
-    <div className="center-screen">
-      <motion.div className="who" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="display">¿Quién está entrando?</h1>
-        <p className="muted">Se recuerda en este dispositivo. Lo podés cambiar en Ajustes.</p>
-        <div className="who-cards">
-          {(['a', 'b'] as const).map((w, i) => (
-            <motion.button
-              key={w}
-              className="who-card"
-              onClick={() => choose(w)}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0, transition: { delay: 0.15 + i * 0.1 } }}
-              whileHover={{ y: -4 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              <Art lottie={people[w].animal} size={96} />
-              <span className="who-name">{people[w].name}</span>
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
+      <Player />
     </div>
   )
 }

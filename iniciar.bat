@@ -24,7 +24,7 @@ if not exist node_modules (
 )
 
 if not exist .env.local (
-  echo Sin .env.local: arranca en modo vista previa. La clave es: nosotros
+  echo Sin .env.local: arranca en modo vista previa. Claves: shily y rusito
 )
 
 echo Abriendo Rusito y Shily en http://localhost:5173

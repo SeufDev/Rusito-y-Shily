@@ -11,7 +11,7 @@ import { usePeople, useStore } from '../lib/store'
 const AVATARS = [...PETS.map((p) => p.lottie), '1f438', '1f984', '1f427', '1f994', '1f9a6', '1f9a5', '1f422', '1f424', '1f98b', '1f41d', '1f426', '1f989', '1f42c']
 
 export default function Settings() {
-  const { settings, saveSettings, setMe, me } = useStore()
+  const { settings, saveSettings, me } = useStore()
   const { P } = usePeople()
   const calm = useCalmMotion()
   const toast = useToast()
@@ -53,10 +53,9 @@ export default function Settings() {
           <input type="checkbox" className="switch" checked={calm} onChange={(e) => setCalmMotion(e.target.checked)} />
         </label>
         <div className="row between gap-m wrap">
-          <span>Entrás como <b>{P[me].name}</b></span>
-          <button className="btn ghost small" onClick={() => setMe(null)}>Cambiar</button>
+          <span>Entraste como <b>{P[me].name}</b>, con tu propia clave.</span>
+          <button className="btn ghost small" onClick={async () => { await backend.signOut(); location.reload() }}><LogOut size={15} /> Cerrar sesión</button>
         </div>
-        <button className="btn ghost" onClick={async () => { await backend.signOut(); location.reload() }}><LogOut size={16} /> Cerrar con llave</button>
         {DEMO && (
           <button className="btn ghost small" onClick={() => { localStorage.removeItem('nl-demo-items'); localStorage.removeItem('nl-achievements-seen'); toast({ text: 'Vista previa reiniciada' }); setTimeout(() => location.reload(), 600) }}>
             Reiniciar la vista previa

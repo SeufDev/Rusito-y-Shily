@@ -1,0 +1,4 @@
+Carpetas de música:
+  shily/   → lista de Shily
+  rusito/  → lista de Rusito
+Los mp3 que dejes sueltos acá (fuera de esas carpetas) aparecen en las dos listas.

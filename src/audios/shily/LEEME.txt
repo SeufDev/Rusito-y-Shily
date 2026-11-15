@@ -1,0 +1,5 @@
+Poné acá los mp3 de la lista de Shily.
+Se agregan solos al reproductor (si la web está abierta en tu compu, aparecen al instante).
+
+Tip: si el archivo se llama "Artista - Canción.mp3" se ve más prolijo.
+Si el mp3 trae tapa del disco, también se muestra.
