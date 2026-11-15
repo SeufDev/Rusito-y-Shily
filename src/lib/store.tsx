@@ -101,6 +101,14 @@ export function StoreProvider({ me, children }: { me: Who; children: ReactNode }
     }),
     [settingsItem],
   )
+  // La pantalla de entrada no puede leer los datos (están protegidos hasta que entrás),
+  // así que cada dispositivo se acuerda de los nombres y animalitos que eligieron adentro.
+  useEffect(() => {
+    if (!ready) return
+    const keep = (w: Who) => ({ name: settings.people[w].name, animal: settings.people[w].animal })
+    try { localStorage.setItem(PEOPLE_CACHE, JSON.stringify({ a: keep('a'), b: keep('b') })) } catch { /* sin almacenamiento: queda el de siempre */ }
+  }, [ready, settings.people])
+
   const saveSettings = useCallback(
     async (s: Partial<Settings>) => {
       const next = { ...settings, ...s }
@@ -134,6 +142,17 @@ export function StoreProvider({ me, children }: { me: Who; children: ReactNode }
   }
   if (!ready) return <div className="boot"><div className="boot-dot" /></div>
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
+}
+
+const PEOPLE_CACHE = 'nl-people'
+/** Nombres y animalitos tal como los eligieron adentro (los últimos que vio este dispositivo). */
+export function cachedPeople(): Record<Who, { name: string; animal: string }> {
+  let saved: Partial<Record<Who, { name?: string; animal?: string }>> = {}
+  try { saved = JSON.parse(localStorage.getItem(PEOPLE_CACHE) || '{}') } catch { /* nada guardado */ }
+  return {
+    a: { name: saved.a?.name || DEFAULT_PEOPLE.a.name, animal: saved.a?.animal || DEFAULT_PEOPLE.a.animal },
+    b: { name: saved.b?.name || DEFAULT_PEOPLE.b.name, animal: saved.b?.animal || DEFAULT_PEOPLE.b.animal },
+  }
 }
 
 export function useStore() {

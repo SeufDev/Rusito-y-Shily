@@ -2,7 +2,8 @@ import { AnimatePresence, motion } from 'motion/react'
 import { ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
 import { backend } from '../lib/backend'
-import { DEFAULT_PEOPLE, DEMO, DEMO_PASSWORDS, type Who } from '../lib/config'
+import { DEMO, DEMO_PASSWORDS, type Who } from '../lib/config'
+import { cachedPeople } from '../lib/store'
 import { Art } from './Art'
 
 /** Entrada: cada uno elige su perfil y escribe su propia clave. */
@@ -10,7 +11,7 @@ export function Lock({ onOpen }: { onOpen: (w: Who) => void }) {
   const [who, setWho] = useState<Who | null>(null)
   const [pw, setPw] = useState('')
   const [state, setState] = useState<'idle' | 'busy' | 'no'>('idle')
-  const P = DEFAULT_PEOPLE
+  const [P] = useState(cachedPeople)
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!who) return

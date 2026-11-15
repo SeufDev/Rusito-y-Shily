@@ -14,7 +14,7 @@ export const DEMO_PASSWORDS = { a: 'shily', b: 'rusito' } as const
 
 /** 'a' es ella (el centro de todo), 'b' es Rusito (Rodri). Los nombres se cambian en Ajustes. */
 export const DEFAULT_PEOPLE: Record<Who, { name: string; animal: string; color: string }> = {
-  a: { name: 'Shily', animal: '1f98a', color: '#e8a3a3' },
+  a: { name: 'Shily', animal: '1f431', color: '#e8a3a3' },
   b: { name: 'Rusito', animal: '1f43b', color: '#8fb3a0' },
 }
 export const DEFAULT_START = '2026-11-14'
