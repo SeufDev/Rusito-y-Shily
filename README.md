@@ -6,10 +6,12 @@ Pensada con cuidado: nada se muere ni se castiga, no hay rachas que se pierdan, 
 
 ## Probarla en tu compu
 
-```bash
-npm install
-npm run dev
-```
+Necesitás [Node.js](https://nodejs.org) (versión LTS). Después:
+
+- **Windows:** doble clic en `iniciar.bat`.
+- **Git Bash, Mac o Linux:** `./iniciar.sh`.
+
+Los dos instalan las dependencias la primera vez y abren la web en el navegador (`http://localhost:5173`). A mano sería `npm install` y `npm run dev`.
 
 Sin configurar Supabase arranca en **modo vista previa**: guarda todo en ese navegador. La clave es `nosotros`. Abrí dos pestañas y entrá como Shily en una y como Rusito en la otra para ver cómo se sincroniza.
 
