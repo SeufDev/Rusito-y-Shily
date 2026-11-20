@@ -37,13 +37,19 @@ export function StoreProvider({ me, children }: { me: Who; children: ReactNode }
   const [version, setVersion] = useState(0)
   const [ready, setReady] = useState(false)
   const [incoming, setIncoming] = useState<Item | null>(null)
+  const [fail, setFail] = useState<string | null>(null)
+  const [attempt, setAttempt] = useState(0)
   const bump = () => setVersion((v) => v + 1)
   const meRef = useRef(me)
   meRef.current = me
 
   useEffect(() => {
     let off = () => {}
+    setFail(null)
+    // Si la base tarda demasiado o responde con error, lo decimos en vez de quedar cargando para siempre.
+    const slow = setTimeout(() => setFail('La base no responde. Puede ser la conexión, o que falte algún dato en Vercel.'), 15000)
     backend.load().then((list) => {
+      clearTimeout(slow)
       list.forEach((i) => map.current.set(i.id, i))
       setReady(true)
       bump()
@@ -56,9 +62,12 @@ export function StoreProvider({ me, children }: { me: Who; children: ReactNode }
         }
         bump()
       })
+    }).catch((e) => {
+      clearTimeout(slow)
+      setFail(e?.message || String(e))
     })
-    return () => off()
-  }, [])
+    return () => { clearTimeout(slow); off() }
+  }, [attempt])
 
   const add = useCallback(
     async <T,>(kind: string, data: T) => {
@@ -140,6 +149,19 @@ export function StoreProvider({ me, children }: { me: Who; children: ReactNode }
     remove,
     incoming,
   }
+  if (!ready && fail)
+    return (
+      <div className="boot">
+        <div className="card stack-s" style={{ maxWidth: 420, textAlign: 'center' }}>
+          <b>No pude abrir sus cosas todavía.</b>
+          <p className="small muted">{fail}</p>
+          <div className="row gap-s" style={{ justifyContent: 'center' }}>
+            <button className="btn primary small" onClick={() => setAttempt((a) => a + 1)}>Probar de nuevo</button>
+            <button className="btn ghost small" onClick={() => backend.signOut().then(() => location.reload())}>Salir</button>
+          </div>
+        </div>
+      </div>
+    )
   if (!ready) return <div className="boot"><div className="boot-dot" /></div>
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
 }

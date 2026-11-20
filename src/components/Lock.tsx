@@ -10,15 +10,18 @@ import { Art } from './Art'
 export function Lock({ onOpen }: { onOpen: (w: Who) => void }) {
   const [who, setWho] = useState<Who | null>(null)
   const [pw, setPw] = useState('')
-  const [state, setState] = useState<'idle' | 'busy' | 'no'>('idle')
+  const [why, setWhy] = useState('')
+  const [state, setState] = useState<'idle' | 'busy' | 'no' | 'down'>('idle')
   const [P] = useState(cachedPeople)
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!who) return
     setState('busy')
-    const ok = await backend.signIn(who, pw)
-    if (ok) onOpen(who)
-    else setState('no')
+    // Nunca queda "Abriendo…" para siempre: si la base no contesta, se avisa.
+    const timeout = new Promise<'slow'>((r) => setTimeout(() => r('slow'), 15000))
+    const res = await Promise.race([backend.signIn(who, pw).catch((e) => { setWhy(e?.message || ''); return 'down' as const }), timeout])
+    if (res === true) onOpen(who)
+    else setState(res === 'slow' || res === 'down' ? 'down' : 'no')
   }
   return (
     <div className="center-screen">
@@ -57,7 +60,7 @@ export function Lock({ onOpen }: { onOpen: (w: Who) => void }) {
                 aria-label="Clave"
               />
               <button className="btn primary" disabled={!pw || state === 'busy'}>{state === 'busy' ? 'Abriendo…' : 'Entrar'}</button>
-              <p className="hint">{state === 'no' ? 'Mmm, esa no es. Probá de nuevo, sin apuro.' : DEMO ? `Vista previa: la clave es "${DEMO_PASSWORDS[who]}".` : ' '}</p>
+              <p className="hint">{state === 'no' ? 'Mmm, esa no es. Probá de nuevo, sin apuro.' : state === 'down' ? `No pude conectar con la base${why ? ` (${why})` : ''}. Probá de nuevo en un ratito.` : DEMO ? `Vista previa: la clave es "${DEMO_PASSWORDS[who]}".` : ' '}</p>
             </motion.form>
           )}
         </AnimatePresence>

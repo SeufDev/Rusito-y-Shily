@@ -40,7 +40,10 @@ function supabaseBackend(): Backend {
     },
     async signIn(who, password) {
       const { error } = await sb.auth.signInWithPassword({ email: EMAILS[who], password })
-      return !error
+      if (!error) return true
+      // Clave equivocada: false. Cualquier otra cosa (cuenta sin confirmar, datos de Vercel mal cargados) se muestra tal cual.
+      if (error.code === 'invalid_credentials' || /invalid login/i.test(error.message)) return false
+      throw error
     },
     async signOut() {
       await sb.auth.signOut()
