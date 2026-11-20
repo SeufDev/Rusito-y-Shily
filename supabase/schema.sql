@@ -46,6 +46,12 @@ create policy "items: crear" on public.items for insert to authenticated with ch
 create policy "items: editar" on public.items for update to authenticated using (public.my_who() is not null) with check (public.my_who() is not null);
 create policy "items: borrar" on public.items for delete to authenticated using (author = public.my_who());
 
+-- Los proyectos nuevos de Supabase ya no dan permiso automático a las tablas nuevas: se lo damos a mano.
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on public.items to authenticated;
+grant select on public.people to authenticated;
+grant execute on function public.my_who() to authenticated;
+
 -- Al editar algo del otro (marcar una carta como leída, encontrar una nota) el autor no cambia nunca.
 create or replace function public.keep_author() returns trigger
 language plpgsql as $$
