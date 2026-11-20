@@ -1,7 +1,7 @@
 import confetti from 'canvas-confetti'
 import { AnimatePresence, motion } from 'motion/react'
 import { X } from 'lucide-react'
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Art } from './Art'
 import type { Art as ArtT } from '../lib/content'
@@ -62,7 +62,7 @@ export function Seeds({ big }: { big?: boolean }) {
 
 export function Empty({ art, children }: { art: ArtT; children: ReactNode }) {
   return (
-    <div className="empty">
+    <div className="empty-state">
       <Art {...art} size={72} />
       <p>{children}</p>
     </div>
@@ -70,15 +70,30 @@ export function Empty({ art, children }: { art: ArtT; children: ReactNode }) {
 }
 
 /* ---------- avisitos suaves (solo dentro de la web, nunca notificaciones) ---------- */
-type Toast = { id: number; text: ReactNode; art?: ArtT }
+/** `group`: los avisos del mismo grupo no se apilan, el nuevo reemplaza al anterior (ej: muchos abrazos seguidos). */
+type Toast = { id: number; text: ReactNode; art?: ArtT; group?: string }
 const ToastCtx = createContext<(t: Omit<Toast, 'id'>) => void>(() => {})
 export const useToast = () => useContext(ToastCtx)
 export function ToastHost({ children }: { children: ReactNode }) {
   const [list, setList] = useState<Toast[]>([])
+  const timers = useRef(new Map<number, ReturnType<typeof setTimeout>>())
+  const live = useRef<Toast[]>([])
   const push = useCallback((t: Omit<Toast, 'id'>) => {
-    const id = Date.now() + Math.random()
-    setList((l) => [...l, { ...t, id }])
-    setTimeout(() => setList((l) => l.filter((x) => x.id !== id)), 4200)
+    const drop = (id: number) => {
+      timers.current.delete(id)
+      live.current = live.current.filter((x) => x.id !== id)
+      setList(live.current)
+    }
+    const same = t.group ? live.current.find((x) => x.group === t.group) : undefined
+    // mismo grupo: se actualiza el que ya está a la vista y se le reinicia el tiempo
+    const id = same ? same.id : Date.now() + Math.random()
+    clearTimeout(timers.current.get(id))
+    timers.current.set(id, setTimeout(() => drop(id), 4200))
+    live.current = same ? live.current.map((x) => (x.id === id ? { ...t, id } : x)) : [...live.current, { ...t, id }]
+    // nunca más de tres avisos a la vez
+    for (const old of live.current.slice(0, -3)) { clearTimeout(timers.current.get(old.id)); timers.current.delete(old.id) }
+    live.current = live.current.slice(-3)
+    setList(live.current)
   }, [])
   return (
     <ToastCtx.Provider value={push}>
@@ -97,8 +112,13 @@ export function ToastHost({ children }: { children: ReactNode }) {
   )
 }
 
+let lastConfetti = 0
 export function celebrate(calm: boolean, opts: confetti.Options = {}) {
   if (calm) return
+  // si se toca muchas veces seguidas, no se acumula papel picado hasta trabar la página
+  const now = performance.now()
+  if (now - lastConfetti < 700) return
+  lastConfetti = now
   confetti({
     particleCount: 60,
     spread: 70,

@@ -117,8 +117,10 @@ export const yieldValue = (sp: Species) => (sp.type === 'árbol' ? 3 : sp.type =
 
 export function useGame() {
   const { items, version, me } = useStore()
-  const now = useNow()
+  const tick = useNow()
   return useMemo(() => {
+    // el reloj avanza cada 30 s; si recién regaron, se usa la hora de ahora para que se note al instante
+    const now = Math.max(tick, Date.now())
     const by: Record<string, Item[]> = {}
     for (const i of items.values()) (by[i.kind] ??= []).push(i)
     for (const k in by) by[k].sort((a, b) => (a.created_at < b.created_at ? -1 : 1))
@@ -264,7 +266,7 @@ export function useGame() {
       counts, unlocked, points: earned - spent, earned, owned, seedStock, me,
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, version, me, now])
+  }, [items, version, me, tick])
 }
 /** Especies que hay en el catálogo, para el herbario. */
 export const ALL_SPECIES = SPECIES

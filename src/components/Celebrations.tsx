@@ -66,8 +66,9 @@ export function Celebrations() {
   useEffect(() => {
     if (!incoming) return
     if (incoming.kind === 'hug') {
-      setHearts((h) => [...h, Date.now()])
-      toast({ text: <><b>{name(incoming.author)}</b> está pensando en vos</>, art: { lottie: '1f497' } })
+      // como mucho tres corazones flotando a la vez, aunque lleguen muchos abrazos juntos
+      setHearts((h) => (h.length >= 3 ? h : [...h, Date.now() + Math.random()]))
+      toast({ group: 'hug-in', text: <><b>{name(incoming.author)}</b> está pensando en vos</>, art: { lottie: '1f497' } })
       return
     }
     const l = LABEL[incoming.kind]

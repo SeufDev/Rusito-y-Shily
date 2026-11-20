@@ -1,6 +1,6 @@
 import { motion } from 'motion/react'
 import { ArrowRight, Heart } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Art } from '../components/Art'
 import { celebrate, Modal, useToast } from '../components/ui'
@@ -86,15 +86,23 @@ function Thinking() {
   const received = hugs.filter((h) => h.author === other && dayKey(new Date(h.created_at)) === today).length
   const sent = hugs.filter((h) => h.author === me && dayKey(new Date(h.created_at)) === today).length
   const [pulse, setPulse] = useState(0)
+  const [count, setCount] = useState(0)
+  const last = useRef(0)
   return (
     <div className="card center thinking">
       <motion.button
         className="heart-btn"
         whileTap={{ scale: 0.9 }}
         onClick={() => {
-          add('hug', {})
           setPulse((p) => p + 1)
-          toast({ text: <>Le llegó tu abrazo a <b>{P[other].name}</b></>, art: { lottie: '1f917' } })
+          // un abrazo por segundo como mucho: si se toca sin parar, el corazón late pero no se llena la base
+          const now = Date.now()
+          if (now - last.current < 1000) return
+          last.current = now
+          add('hug', {})
+          const n = count + 1
+          setCount(n)
+          toast({ group: 'hug-out', text: n > 1 ? <>Le llegaron <b>{n} abrazos</b> a <b>{P[other].name}</b></> : <>Le llegó tu abrazo a <b>{P[other].name}</b></>, art: { lottie: '1f917' } })
           celebrate(calm, { particleCount: 25, spread: 50, origin: { y: 0.4 }, shapes: ['circle'] })
         }}
         aria-label={`Mandarle un abrazo a ${P[other].name}`}
